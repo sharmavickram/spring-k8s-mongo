@@ -1,0 +1,53 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: springboot-mongo-svc
+spec:
+  selector:
+    app: springboot-mongo
+  ports:
+    - protocol: TCP
+      port: 8092
+      targetPort: 8092
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-mongo-deployment
+spec:
+  selector:
+    matchLabels:
+      app: springboot-mongo
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: springboot-mongo
+    spec:
+      containers:
+        - name: springboot-mongo
+          image: gcr.io/maximal-muse-251207/vikram-spring-k8s-mongo:v2
+          ports:
+            - containerPort: 8092
+          env:
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: username
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: password
+            - name: MONGO_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-conf
+                  key: database
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-conf
+                  key: host

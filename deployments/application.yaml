@@ -1,0 +1,36 @@
+server:
+  port: 8092
+spring:
+  application:
+    name: springboot-mongo-service
+  data:
+    mongodb:
+      host: 34.131.36.85
+      database: admin
+      port: 27017
+      username: test
+      password: test@123
+  cloud:
+    kubernetes:
+      discovery:
+        register: true
+      secrets:
+        name: mongo-secret
+
+      config:
+        enabled: true
+        sources:
+          - namespace: default
+            name: mongo-conf
+      reload:
+        enabled: true
+        mode: polling
+        period: 1000
+management:
+  endpoint:
+    restart:
+      enabled: true
+    health:
+      enabled: true
+    info:
+      enabled: true
